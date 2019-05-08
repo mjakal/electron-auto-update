@@ -56,7 +56,14 @@ function sendStatusToWindow(text) {
   win.webContents.send('message', text);
 }
 function createDefaultWindow() {
-  win = new BrowserWindow();
+  win = new BrowserWindow({
+    webPreferences: {
+      webSecurity: false,
+      nodeIntegration: true
+    },
+    width: 1280,
+    height: 720
+  });
   win.webContents.openDevTools();
   win.on('closed', () => {
     win = null;
@@ -124,5 +131,5 @@ autoUpdater.on('update-downloaded', (ev, info) => {
 })
 
 app.on('ready', function()  {
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates();
 });
