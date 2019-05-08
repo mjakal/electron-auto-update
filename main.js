@@ -1,5 +1,9 @@
-const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
-const { autoUpdater } = require("electron-updater");
+// This is free and unencumbered software released into the public domain.
+// See LICENSE for details
+
+const {app, BrowserWindow, Menu, protocol, ipcMain} = require('electron');
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
 
 //-------------------------------------------------------------------
 // Logging
@@ -9,9 +13,9 @@ const { autoUpdater } = require("electron-updater");
 // This logging setup is not required for auto-updates to work,
 // but it sure makes debugging easier :)
 //-------------------------------------------------------------------
-// autoUpdater.logger = log;
-// autoUpdater.logger.transports.file.level = 'info';
-// log.info('App starting...');
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 //-------------------------------------------------------------------
 // Define the menu
@@ -51,8 +55,7 @@ if (process.platform === 'darwin') {
 let win;
 
 function sendStatusToWindow(text) {
-  // log.info(text);
-  console.log('data', text);
+  log.info(text);
   win.webContents.send('message', text);
 }
 function createDefaultWindow() {
@@ -74,20 +77,23 @@ function createDefaultWindow() {
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
 })
-autoUpdater.on('update-available', (ev, info) => {
+autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
 })
-autoUpdater.on('update-not-available', (ev, info) => {
+autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
 })
-autoUpdater.on('error', (ev, err) => {
-  sendStatusToWindow('Error in auto-updater.');
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater. ' + err);
 })
-autoUpdater.on('download-progress', (ev, progressObj) => {
-  sendStatusToWindow('Download progress...');
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  sendStatusToWindow(log_message);
 })
-autoUpdater.on('update-downloaded', (ev, info) => {
-  sendStatusToWindow('Update downloaded; will install in 5 seconds');
+autoUpdater.on('update-downloaded', (info) => {
+  sendStatusToWindow('Update downloaded');
 });
 app.on('ready', function() {
   // Create the Menu
@@ -100,8 +106,22 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+//
+// CHOOSE one of the following options for Auto updates
+//
+
 //-------------------------------------------------------------------
-// Auto updates
+// Auto updates - Option 1 - Simplest version
+//
+// This will immediately download an update, then install when the
+// app quits.
+//-------------------------------------------------------------------
+app.on('ready', function()  {
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
+//-------------------------------------------------------------------
+// Auto updates - Option 2 - More control
 //
 // For details about these events, see the Wiki:
 // https://github.com/electron-userland/electron-builder/wiki/Auto-Update#events
@@ -111,25 +131,19 @@ app.on('window-all-closed', () => {
 // Uncomment any of the below events to listen for them.  Also,
 // look in the previous section to see them being used.
 //-------------------------------------------------------------------
+// app.on('ready', function()  {
+//   autoUpdater.checkForUpdates();
+// });
 // autoUpdater.on('checking-for-update', () => {
 // })
-// autoUpdater.on('update-available', (ev, info) => {
+// autoUpdater.on('update-available', (info) => {
 // })
-// autoUpdater.on('update-not-available', (ev, info) => {
+// autoUpdater.on('update-not-available', (info) => {
 // })
-// autoUpdater.on('error', (ev, err) => {
+// autoUpdater.on('error', (err) => {
 // })
-// autoUpdater.on('download-progress', (ev, progressObj) => {
+// autoUpdater.on('download-progress', (progressObj) => {
 // })
-autoUpdater.on('update-downloaded', (ev, info) => {
-  // Wait 5 seconds, then quit and install
-  // In your application, you don't need to wait 5 seconds.
-  // You could call autoUpdater.quitAndInstall(); immediately
-  setTimeout(function() {
-    autoUpdater.quitAndInstall();
-  }, 5000)
-})
-
-app.on('ready', function()  {
-  autoUpdater.checkForUpdates();
-});
+// autoUpdater.on('update-downloaded', (info) => {
+//   autoUpdater.quitAndInstall();
+// })

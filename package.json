@@ -1,24 +1,25 @@
 {
-  "name": "electron-updater-generic-example",
-  "version": "0.2.0",
+  "name": "electron-updater-example",
+  "version": "0.0.5",
   "main": "main.js",
-  "description": "electron-updater generic example project",
+  "description": "electron-updater example project",
   "author": {
     "name": "Matt Haggard",
-    "email": "example@example.com",
+    "email": "app@example.com",
     "url": "https://example.com/"
   },
   "scripts": {
     "start": "electron .",
-    "dist": "build --linux --x64",
+    "dist": "build --linux",
     "serve": "http-server wwwroot/ -p 8080"
   },
   "dependencies": {
+    "electron-log": "^3.0.5",
     "electron-updater": "^4.0.6"
   },
   "devDependencies": {
     "electron": "^5.0.1",
-    "electron-builder": "^20.39.0",
+    "electron-builder": "^20.28.4",
     "http-server": "^0.11.1"
   },
   "build": {
@@ -28,7 +29,14 @@
         "url": "http://127.0.0.1:8080/"
       }
     ],
-    "appId": "com.github.iffy.electronupdatergenericexample",
+    "appId": "com.github.martin.electronupdaterexample",
+    "mac": {
+      "category": "your.app.category.type",
+      "target": [
+        "zip",
+        "dmg"
+      ]
+    },
     "linux": {
       "category": "Utility",
       "icon": "icons/icons",
@@ -40,17 +48,11 @@
     "appImage": {
       "systemIntegration": "doNotAsk"
     },
-    "mac": {
-      "category": "your.app.category.type",
-      "target": [
-        "zip",
-        "dmg"
-      ]
-    },
     "win": {
       "target": "nsis",
-      "certificateFile": "./certs/my_signing_key.pfx",
-      "certificatePassword": "winamp291"
+      "verifyUpdateCodeSignature": false,
+      "certificateFile": "./certs/some_file.pfx",
+      "certificatePassword": "some_password"
     }
   }
 }
