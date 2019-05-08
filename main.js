@@ -1,6 +1,5 @@
-const {app, BrowserWindow, Menu, protocol, ipcMain} = require('electron');
-const log = require('electron-log');
-const {autoUpdater} = require("electron-updater");
+const { app, BrowserWindow, Menu, protocol, ipcMain } = require('electron');
+const { autoUpdater } = require("electron-updater");
 
 //-------------------------------------------------------------------
 // Logging
@@ -10,9 +9,9 @@ const {autoUpdater} = require("electron-updater");
 // This logging setup is not required for auto-updates to work,
 // but it sure makes debugging easier :)
 //-------------------------------------------------------------------
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('App starting...');
+// autoUpdater.logger = log;
+// autoUpdater.logger.transports.file.level = 'info';
+// log.info('App starting...');
 
 //-------------------------------------------------------------------
 // Define the menu
@@ -52,7 +51,8 @@ if (process.platform === 'darwin') {
 let win;
 
 function sendStatusToWindow(text) {
-  log.info(text);
+  // log.info(text);
+  console.log('data', text);
   win.webContents.send('message', text);
 }
 function createDefaultWindow() {
@@ -124,5 +124,5 @@ autoUpdater.on('update-downloaded', (ev, info) => {
 })
 
 app.on('ready', function()  {
-  autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdatesAndNotify();
 });
