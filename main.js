@@ -92,9 +92,16 @@ autoUpdater.on('download-progress', (progressObj) => {
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
   sendStatusToWindow(log_message);
 })
-autoUpdater.on('update-downloaded', (info) => {
+autoUpdater.on('update-downloaded', (ev, info) => {
+  // Wait 5 seconds, then quit and install
+  // In your application, you don't need to wait 5 seconds.
+  // You could call autoUpdater.quitAndInstall(); immediately
   sendStatusToWindow('Update downloaded');
-});
+  
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();  
+  }, 5000)
+})
 app.on('ready', function() {
   // Create the Menu
   const menu = Menu.buildFromTemplate(template);
