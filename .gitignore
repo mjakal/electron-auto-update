@@ -1,5 +1,4 @@
 node_modules
-certs/
 dist/
 wwwroot/
 package-lock.json
