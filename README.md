@@ -1,74 +1,78 @@
+# Generic Electron Auto Update Example
+
+After struggling with tis for a few days I decided to write this guide, hopefully it will someone. 
+
+I have to give credit to the guy who wrote made the initial guide. I just updated his code to work with electron 5.0.1.
+
+[`Matt Haggard`](https://gist.github.com/iffy/0ff845e8e3f59dbe7eaf2bf24443f104)
+
 This repo contains the **bare minimum code** to have an auto-updating Electron app using [`electron-updater`](https://github.com/electron-userland/electron-builder/tree/master/packages/electron-updater) with releases stored on GitHub.
 
-If you can't use GitHub, you can use other providers:
+## Getting started
 
-- [Complete electron-updater HTTP example](https://gist.github.com/iffy/0ff845e8e3f59dbe7eaf2bf24443f104)
-- [Complete electron-updater from gitlab.com private repo example](https://gist.github.com/Slauta/5b2bcf9fa1f6f6a9443aa6b447bcae05)
+Clone the repo cd into project folder and execute these commands.
 
-**NOTE:** If you want to run through this whole process, you will need to fork this repo on GitHub and replace all instances of `iffy` with your GitHub username before doing the following steps.
+```
+npm install
+npm start
+```
 
-1. For macOS, you will need a code-signing certificate.
+If everything went well, you can continue with this guide.
+
+## Code Signing Certificates
+
+* For macOS, you will need a code-signing certificate.
 
     Install Xcode (from the App Store), then follow [these instructions](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html#//apple_ref/doc/uid/TP40012582-CH31-SW6) to make sure you have a "Mac Developer" certificate.  If you'd like to export the certificate (for automated building, for instance) [you can](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html#//apple_ref/doc/uid/TP40012582-CH31-SW7).  You would then follow [these instructions](https://www.electron.build/code-signing).
 
-2. Adjust `package.json` if needed.
+* On Windows, you can generate sefl-signed certificate for testing and development purposes. This certificate is required for electron-updater to work properly.
 
-    By default, `electron-updater` will try to detect the GitHub settings (such as the repo name and owner) from reading the `.git/config` or from reading other attributes within `package.json`.  If the auto-detected settings are not what you want, configure the [`publish`](https://github.com/electron-userland/electron-builder/wiki/Publishing-Artifacts#PublishConfiguration) property as follows:
+    You can generate this certificate by following steps below:
+    Open Windows PowerShell with administrative privileges and execute these commands:
 
-        {
-            ...
-            "build": {
-                "publish": [{
-                    "provider": "github",
-                    "owner": "iffy",
-                    "repo": "electron-updater-example"
-                }],
-                ...
-            }
-        }
+    ```
+    $rootCert = New-SelfSignedCertificate -DnsName "martin" -Type CodeSigningCert -CertStoreLocation "C:\projects\nsis-test\certs\"
+    [System.Security.SecureString]$rootcertPassword = ConvertTo-SecureString -String "some_password" -Force -AsPlainText
+    [String]$rootCertPath = Join-Path -Path 'cert:\CurrentUser\My\' -ChildPath "$($rootcert.Thumbprint)"
+    [String]$rootCertPath = Join-Path -Path 'cert:\LocalMachine\My\' -ChildPath "$($rootcert.Thumbprint)"
+    Export-PfxCertificate -Cert $rootCertPath -FilePath 'RootCA.pfx' -Password $rootcertPassword
+    Export-Certificate -Cert $rootCertPath -FilePath 'RootCA.crt'
+    ```
+    
+    After successful creation of certificate files, make sure that they are in correct location. Open Certificate Manager by clicking on the Start button, type certmgr.msc in the search field and press Enter key.
+    
+    If your newly created certificate is not in *Trusted Root Certification Authorities* certificate folder, drag and drop it from *Personal*. Otherwise automatic updates will not work.
+    
+    Next, open package.json in your favorite text editor and modify these two lines.
+ 
+    ```
+    "certificateFile": "./certs/some_file.pfx",
+    "certificatePassword": "some_password"
+    ```
 
-3. Install necessary dependencies with:
+    Note: sefl-signed certificate can only be used for testing purposes.
 
-        yarn
+    You can get more help on these websites:
+    [`How to: Create Temporary Certificates for Use During Development`](https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/how-to-create-temporary-certificates-for-use-during-development)
+    [`New-SelfSignedCertificate`](https://docs.microsoft.com/en-us/powershell/module/pkiclient/new-selfsignedcertificate?view=win10-ps)
 
-   or
 
-        npm install
+## Packaging And Testing
 
-4. Generate a GitHub access token by going to <https://github.com/settings/tokens/new>.  The access token should have the `repo` scope/permission.  Once you have the token, assign it to an environment variable
+When you are done with code signing mess, it's time for building and testing. In package.json onder scripts.dist key you can set your desired os. See the example below.
 
-    On macOS/linux:
+```
+"scripts": {
+    "dist": "build --linux --mac --win"
+}
+```
 
-        export GH_TOKEN="<YOUR_TOKEN_HERE>"
+After configuring dist key for your os, run the command below.
 
-    On Windows, run in powershell:
+```
+npm run dist
+```
 
-        [Environment]::SetEnvironmentVariable("GH_TOKEN","<YOUR_TOKEN_HERE>","User")
+### Testing Auto Update
 
-    Make sure to restart IDE/Terminal to inherit latest env variable.
-
-5. Publish for your platform with:
-
-        build -p always
-
-   or
-
-        npm run publish
-
-   If you want to publish for more platforms, edit the `publish` script in `package.json`.  For instance, to build for Windows and macOS:
-
-        ...
-        "scripts": {
-            "publish": "build --mac --win -p always"
-        },
-        ...
-
-6. Release the release on GitHub by going to <https://github.com/YOUR_GIT_HUB_USERNAME/electron-updater-example/releases>, editing the release and clicking "Publish release."
-
-7. Download and install the app from <https://github.com/YOUR_GIT_HUB_USERNAME/electron-updater-example/releases>.
-
-8. Update the version in `package.json`, commit and push to GitHub.
-
-9. Do steps 5 and 6 again.
-
-10. Open the installed version of the app and see that it updates itself.
+When npm run dust finishes with the building process, open /dist folder and install the app on your system. After successful install, bump the version in package.json and and run the "npm run dist" command once again. When done, copy paste the contents of /dist folder to /wwwroot folder and run "npm run serve". Open the previous version that you installed on your system and vuola :)!
