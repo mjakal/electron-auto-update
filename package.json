@@ -1,26 +1,26 @@
 {
   "name": "electron-updater-example",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "main": "main.js",
   "description": "electron-updater example project",
   "author": {
-    "name": "Matt Haggard",
+    "name": "Martin Jakal",
     "email": "app@example.com",
     "url": "https://example.com/"
   },
   "scripts": {
     "start": "electron .",
-    "dist": "build --linux",
+    "dist": "electron-builder -l",
     "serve": "http-server wwwroot/ -p 8080"
   },
   "dependencies": {
-    "electron-log": "^3.0.5",
-    "electron-updater": "^4.0.6"
+    "electron-log": "^4.3.0",
+    "electron-updater": "^4.3.5"
   },
   "devDependencies": {
-    "electron": "^5.0.1",
-    "electron-builder": "^20.28.4",
-    "http-server": "^0.11.1"
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1",
+    "http-server": "^0.12.3"
   },
   "build": {
     "publish": [
@@ -44,9 +44,6 @@
         "AppImage",
         "deb"
       ]
-    },
-    "appImage": {
-      "systemIntegration": "doNotAsk"
     },
     "win": {
       "target": "nsis",

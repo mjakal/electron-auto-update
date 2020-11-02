@@ -5,6 +5,9 @@ const {app, BrowserWindow, Menu, protocol, ipcMain} = require('electron');
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
 
+// Disable security warnings and set react app path on dev env
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
+
 //-------------------------------------------------------------------
 // Logging
 //
@@ -61,7 +64,7 @@ function sendStatusToWindow(text) {
 function createDefaultWindow() {
   win = new BrowserWindow({
     webPreferences: {
-      webSecurity: false,
+      webSecurity: true,
       nodeIntegration: true
     },
     width: 1280,
