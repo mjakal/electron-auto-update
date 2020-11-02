@@ -2,7 +2,7 @@
 
 After struggling with this for few days I decided to write this guide, hopefully it will help someone.
 
-I have to give credit to the guy who wrote made the initial guide. I updated his code to work with electron 5.0.1.
+I have to give credit to the guy who wrote made the initial guide. I updated his code to work with electron 10.1.5.
 
 Here is the link to [`Matt Haggard and his electron-updater-example`](https://github.com/iffy/electron-updater-example)
 
@@ -11,6 +11,7 @@ This repo contains the **bare minimum code** to have an auto-updating Electron a
 ## Getting started
 
 Clone the repo cd into project folder and execute these commands.
+
 ```
 npm install
 npm start
