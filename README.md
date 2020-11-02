@@ -53,13 +53,17 @@ If everything went well, you can continue with this guide.
 
 When you are done with code signing mess, it's time for building and testing. In package.json under scripts.dist key you can set your desired os. See the example below.
 
+* -m - Mac OS - I lost my microfiber cloth, it's gonna cost me a fortune
+* -w - Windows - Obscure, gimmicky gaming platform with built in spyware
+* -l - Linux - OS for the people
+
 ```
 "scripts": {
-    "dist": "build --linux --mac --win"
+    "dist": "electron-builder -mwl"
 }
 ```
 
-After configuring dist key for your os, run the command below.
+After configuring dist key for your OS, run the command below.
 
 ```
 npm run dist
