@@ -38,9 +38,10 @@ If everything went well, you can continue with this guide.
     
     If your newly created certificate is not in *Trusted Root Certification Authorities* certificate folder, drag and drop it from *Personal*. Otherwise automatic updates will not work.
     
-    Next, open package.json in your favorite text editor and modify these two lines.
+    Next, open package.json in your favorite text editor and modify these three lines.
  
     ```
+    "publisherName": "Some Company", // when using self signed certs, enter a random string
     "certificateFile": "./certs/some_file.pfx",
     "certificatePassword": "some_password"
     ```

@@ -48,6 +48,7 @@
     "win": {
       "target": "nsis",
       "verifyUpdateCodeSignature": false,
+      "publisherName": "Some Company - Stored in cert file",
       "certificateFile": "./certs/some_file.pfx",
       "certificatePassword": "some_password"
     }
